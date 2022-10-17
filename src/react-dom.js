@@ -10,11 +10,16 @@ function mount(vdom, container) {
 }
 
 function createDOM(vdom) {
+  if (typeof vdom === "string" || typeof vdom === "number") {
+    return document.createTextNode(vdom);
+  }
   let { type, props } = vdom;
   let dom;
 
   if (type === REACT_TEXT) {
     dom = document.createTextNode(props.content);
+  } else if (typeof type === "function") {
+    return mountFunctionComponent(vdom);
   } else {
     dom = document.createElement(type);
   }
@@ -25,10 +30,18 @@ function createDOM(vdom) {
       render(props.children, dom);
     } else if (Array.isArray(props.children)) {
       reconcileChildren(props.children, dom);
+    } else {
+      render(props.children, dom);
     }
   }
 
   return dom;
+}
+
+function mountFunctionComponent(vdom) {
+  const { type, props } = vdom;
+  const renderVdom = type(props);
+  return createDOM(renderVdom);
 }
 
 function reconcileChildren(childrenVdom, parentDOM) {
