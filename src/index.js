@@ -1,55 +1,28 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-// const element = React.createElement(
-//   "div",
-//   {
-//     style: {
-//       color: "red",
-//     },
-//     className: "title",
-//   },
-//   React.createElement("span", null, "Hello"),
-//   "World"
-// );
+class Counter extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      number: 1,
+    };
+  }
 
-// function FunctionComponent(props) {
-//   const element = React.createElement(
-//     "div",
-//     {
-//       style: {
-//         color: "red",
-//       },
-//       className: "title",
-//     },
-//     React.createElement("span", null, "Hello"),
-//     props.name
-//   );
-//   return element;
-// }
+  onClickHandler = () => {
+    console.log("onClickHandler");
+    this.setState({ number: this.state.number + 1 });
+  };
 
-// function FunctionComponent(props) {
-//   return (
-//     <h1>
-//       Hello, <span>{props.name}</span>
-//     </h1>
-//   );
-// }
-
-// const App = React.createElement(FunctionComponent, { name: "mojie" });
-
-// console.log(App);
-
-class ClassComponent extends React.Component {
   render() {
     return (
-      <h1>
-        Hello, <span>{this.props.name}</span>
-      </h1>
+      <div>
+        <h1>{this.state.number}</h1>
+        <button onClick={this.onClickHandler}>+</button>
+      </div>
     );
   }
 }
-const App = <ClassComponent name="jeason" />;
 
 const root = document.getElementById("root");
-ReactDOM.render(App, root);
+ReactDOM.render(<Counter />, root);

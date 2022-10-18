@@ -73,6 +73,7 @@ function updateProps(dom, oldProps, newProps) {
         dom.style[attr] = styleObj[attr];
       }
     } else if (key.startsWith("on")) {
+      dom[key.toLocaleLowerCase()] = newProps[key];
     } else {
       if (newProps[key]) {
         dom[key] = newProps[key];
