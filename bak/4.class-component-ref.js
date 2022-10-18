@@ -1,12 +1,20 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-function TextInput(props, ref) {
-  return <input ref={ref} />;
+class TextInput extends React.Component {
+  constructor(props) {
+    super(props);
+    this.inputRef = React.createRef();
+  }
+
+  focusInput = () => {
+    this.inputRef.current.focus();
+  };
+
+  render() {
+    return <input ref={this.inputRef} />;
+  }
 }
-
-const ForwardedInput = React.forwardRef(TextInput);
-
 class Form extends React.Component {
   constructor(props) {
     super(props);
@@ -14,13 +22,13 @@ class Form extends React.Component {
   }
 
   formFocus = () => {
-    this.textInputRef.current.focus();
+    this.textInputRef.current.focusInput();
   };
 
   render() {
     return (
       <>
-        <ForwardedInput ref={this.textInputRef} />
+        <TextInput ref={this.textInputRef} />
         <button onClick={this.formFocus}>获取焦点</button>
       </>
     );

@@ -15,7 +15,7 @@ function createDOM(vdom) {
   if (typeof vdom === "string" || typeof vdom === "number") {
     return document.createTextNode(vdom);
   }
-  let { type, props } = vdom;
+  let { type, props, ref } = vdom;
 
   if (type === REACT_TEXT) {
     dom = document.createTextNode(props.content);
@@ -41,14 +41,20 @@ function createDOM(vdom) {
   }
 
   vdom.dom = dom;
+  if (ref) {
+    ref.current = dom;
+  }
   return dom;
 }
 
 function mountClassComponent(vdom) {
-  const { type, props } = vdom;
+  const { type, props, ref } = vdom;
   let classComponentInstance = new type({ ...props });
   const renderVdom = classComponentInstance.render();
   classComponentInstance.oldRenderVdom = vdom.oldRenderVdom = renderVdom;
+  if (ref) {
+    ref.current = classComponentInstance;
+  }
   return createDOM(renderVdom);
 }
 
