@@ -7,13 +7,23 @@ class Counter extends React.Component {
   constructor() {
     super();
     this.state = {
-      number: 1,
+      number: 0,
     };
   }
 
   onClickHandler = () => {
     console.log("onClickHandler");
+
     this.setState({ number: this.state.number + 1 });
+    console.log("clickHandler 1", this.state.number);
+    this.setState({ number: this.state.number + 1 });
+    console.log("clickHandler 2", this.state.number);
+    setTimeout(() => {
+      this.setState({ number: this.state.number + 1 });
+      console.log("setTimeout 1", this.state.number);
+      this.setState({ number: this.state.number + 1 });
+      console.log("setTimeout 2", this.state.number);
+    });
   };
 
   render() {

@@ -1,4 +1,5 @@
 import { REACT_TEXT } from "./constants";
+import { addEvent } from "./event";
 
 function render(vdom, container) {
   mount(vdom, container);
@@ -34,7 +35,7 @@ function createDOM(vdom) {
       render(props.children, dom);
     } else if (Array.isArray(props.children)) {
       reconcileChildren(props.children, dom);
-    } else if( props.children){
+    } else if (props.children) {
       render(props.children, dom);
     }
   }
@@ -76,7 +77,8 @@ function updateProps(dom, oldProps, newProps) {
         dom.style[attr] = styleObj[attr];
       }
     } else if (key.startsWith("on")) {
-      dom[key.toLocaleLowerCase()] = newProps[key];
+      addEvent(dom, key.toLocaleLowerCase(), newProps[key]);
+      // dom[key.toLocaleLowerCase()] = newProps[key];
     } else {
       if (newProps[key]) {
         dom[key] = newProps[key];
@@ -96,10 +98,10 @@ export function findDOM(vdom) {
   return dom;
 }
 
-export function compareTwoVdom(dom, oldVdom, newVdom) {
+export function compareTwoVdom(parentDom, oldVdom, newVdom) {
   const oldDom = findDOM(oldVdom);
   const newDom = createDOM(newVdom);
-  dom.replaceChild(newDom, oldDom);
+  parentDom.replaceChild(newDom, oldDom);
 }
 
 const ReactDOM = {

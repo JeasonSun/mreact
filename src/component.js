@@ -1,4 +1,17 @@
 import { findDOM, compareTwoVdom } from "./react-dom";
+
+export const updateQueue = {
+  isBatchingUpdate: false,
+  updaters: [],
+  batchUpdate() {
+    for (let updater of updateQueue.updaters) {
+      updater.updateComponent();
+    }
+    updateQueue.isBatchingUpdate = false;
+    updateQueue.updaters.length = 0;
+  },
+};
+
 class Updater {
   constructor(componentInstance) {
     this.componentInstance = componentInstance;
@@ -15,7 +28,11 @@ class Updater {
   }
 
   emitUpdate() {
-    this.updateComponent();
+    if (updateQueue.isBatchingUpdate) {
+      updateQueue.updaters.push(this);
+    } else {
+      this.updateComponent();
+    }
   }
 
   updateComponent() {
@@ -64,7 +81,7 @@ export class Component {
    * 3. 比较，查找差异，然后把这些差异同步到真实 DOM 上
    */
   forceUpdate() {
-    console.log("更新组件", this.state);
+    // console.log("更新组件", this.state);
     let oldRenderVdom = this.oldRenderVdom;
     // 根据老的虚拟 DOM 查找到老的真实 DOM
     let oldDom = findDOM(oldRenderVdom);
