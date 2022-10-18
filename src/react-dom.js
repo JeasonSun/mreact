@@ -10,11 +10,11 @@ function mount(vdom, container) {
 }
 
 function createDOM(vdom) {
+  let dom;
   if (typeof vdom === "string" || typeof vdom === "number") {
     return document.createTextNode(vdom);
   }
   let { type, props } = vdom;
-  let dom;
 
   if (type === REACT_TEXT) {
     dom = document.createTextNode(props.content);
@@ -34,24 +34,27 @@ function createDOM(vdom) {
       render(props.children, dom);
     } else if (Array.isArray(props.children)) {
       reconcileChildren(props.children, dom);
-    } else {
+    } else if( props.children){
       render(props.children, dom);
     }
   }
 
+  vdom.dom = dom;
   return dom;
 }
 
 function mountClassComponent(vdom) {
   const { type, props } = vdom;
-  const classComponentInstance = new type(props);
+  let classComponentInstance = new type({ ...props });
   const renderVdom = classComponentInstance.render();
+  classComponentInstance.oldRenderVdom = vdom.oldRenderVdom = renderVdom;
   return createDOM(renderVdom);
 }
 
 function mountFunctionComponent(vdom) {
   const { type, props } = vdom;
   const renderVdom = type(props);
+  vdom.oldRenderVdom = renderVdom;
   return createDOM(renderVdom);
 }
 
@@ -80,6 +83,23 @@ function updateProps(dom, oldProps, newProps) {
       }
     }
   }
+}
+
+export function findDOM(vdom) {
+  let type = vdom.type;
+  let dom;
+  if (typeof type === "string" || type === REACT_TEXT) {
+    dom = vdom.dom;
+  } else {
+    dom = findDOM(vdom.oldRenderVdom);
+  }
+  return dom;
+}
+
+export function compareTwoVdom(dom, oldVdom, newVdom) {
+  const oldDom = findDOM(oldVdom);
+  const newDom = createDOM(newVdom);
+  dom.replaceChild(newDom, oldDom);
 }
 
 const ReactDOM = {

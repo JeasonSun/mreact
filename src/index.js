@@ -1,6 +1,8 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
+Object.freeze = null;
+
 class Counter extends React.Component {
   constructor() {
     super();
@@ -15,14 +17,21 @@ class Counter extends React.Component {
   };
 
   render() {
+    // 使用react 18 的时候，编译生成的instance 和 vdom都是不可扩展的。Object.freeze 限制了扩展。
     return (
       <div>
-        <h1>{this.state.number}</h1>
+        <h1> {this.state.number}</h1>
         <button onClick={this.onClickHandler}>+</button>
       </div>
     );
+    // return React.createElement(
+    //   "div",
+    //   {},
+    //   React.createElement("h1", {}, this.state.number),
+    //   React.createElement("button", { onClick: this.onClickHandler }, "+")
+    // );
   }
 }
 
 const root = document.getElementById("root");
-ReactDOM.render(<Counter />, root);
+ReactDOM.render(React.createElement(Counter), root);
