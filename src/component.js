@@ -36,9 +36,9 @@ class Updater {
   }
 
   updateComponent() {
-    let { componentInstance, pendingStates } = this;
-    if (pendingStates.length > 0) {
-      shouldUpdate(componentInstance, this.getState());
+    let { componentInstance, pendingStates, nextProps } = this;
+    if (nextProps || pendingStates.length > 0) {
+      shouldUpdate(componentInstance, nextProps, this.getState());
     }
   }
 
@@ -57,9 +57,25 @@ class Updater {
   }
 }
 
-function shouldUpdate(componentInstance, nextState) {
+function shouldUpdate(componentInstance, nextProps, nextState) {
+  let willUpdate = true;
+  if (
+    componentInstance.shouldComponentUpdate &&
+    !componentInstance.shouldComponentUpdate(nextProps, nextState)
+  ) {
+    willUpdate = false;
+  }
+  if (willUpdate && componentInstance.componentWillUpdate) {
+    componentInstance.componentWillUpdate();
+  }
+  if (nextProps) {
+    componentInstance.nextProps = nextProps;
+  }
   componentInstance.state = nextState;
-  componentInstance.forceUpdate();
+
+  if (willUpdate) {
+    componentInstance.forceUpdate();
+  }
 }
 export class Component {
   static isReactComponent = true;
@@ -88,5 +104,8 @@ export class Component {
     let newRenderVdom = this.render();
     compareTwoVdom(oldDom.parentNode, oldRenderVdom, newRenderVdom);
     this.oldRenderVdom = newRenderVdom;
+    if (this.componentDidUpdate) {
+      this.componentDidUpdate();
+    }
   }
 }

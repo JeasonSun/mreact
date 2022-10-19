@@ -1,31 +1,50 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-function TextInput(props, ref) {
-  return <input ref={ref} />;
-}
-
-const ForwardedInput = React.forwardRef(TextInput);
-
-class Form extends React.Component {
+class LifeComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.textInputRef = React.createRef();
+    this.state = {
+      number: 0,
+    };
+    console.log("[LifeComponent]", "initialize");
+  }
+  componentWillMount() {
+    console.log("[LifeComponent]", "componentWillMount");
   }
 
-  formFocus = () => {
-    this.textInputRef.current.focus();
+  componentDidMount() {
+    console.log("[LifeComponent]", "componentDidMount");
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const shouldUpdate = !!(nextState.number % 2 === 0);
+    console.log("[LifeComponent]", "shouldComponentUpdate", shouldUpdate);
+    return shouldUpdate;
+  }
+
+  componentWillUpdate() {
+    console.log("[LifeComponent]", "componentWillUpdate");
+  }
+
+  componentDidUpdate() {
+    console.log("[LifeComponent]", "componentDidUpdate");
+  }
+
+  addHandler = () => {
+    this.setState({ number: this.state.number + 1 });
   };
 
   render() {
+    console.log("[LifeComponent]", "render");
     return (
-      <>
-        <ForwardedInput ref={this.textInputRef} />
-        <button onClick={this.formFocus}>获取焦点</button>
-      </>
+      <div>
+        <p>{this.state.number}</p>
+        <button onClick={this.addHandler}> + </button>
+      </div>
     );
   }
 }
 
 const root = document.getElementById("root");
-ReactDOM.render(<Form />, root);
+ReactDOM.render(<LifeComponent />, root);

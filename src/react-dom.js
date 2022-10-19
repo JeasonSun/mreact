@@ -50,10 +50,16 @@ function createDOM(vdom) {
 function mountClassComponent(vdom) {
   const { type, props, ref } = vdom;
   let classComponentInstance = new type({ ...props });
+  if (classComponentInstance.componentWillMount) {
+    classComponentInstance.componentWillMount();
+  }
   const renderVdom = classComponentInstance.render();
   classComponentInstance.oldRenderVdom = vdom.oldRenderVdom = renderVdom;
   if (ref) {
     ref.current = classComponentInstance;
+  }
+  if (classComponentInstance.componentDidMount) {
+    classComponentInstance.componentDidMount();
   }
   return createDOM(renderVdom);
 }
