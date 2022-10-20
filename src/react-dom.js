@@ -65,6 +65,16 @@ function mountClassComponent(vdom) {
   if (classComponentInstance.componentWillMount) {
     classComponentInstance.componentWillMount();
   }
+  if (type.getDerivedStateFromProps) {
+    let nextState = type.getDerivedStateFromProps(
+      props,
+      classComponentInstance.state
+    );
+    if (nextState) {
+      classComponentInstance.state = nextState;
+    }
+  }
+
   const renderVdom = classComponentInstance.render();
   classComponentInstance.oldRenderVdom = vdom.oldRenderVdom = renderVdom;
   if (ref) {

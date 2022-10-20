@@ -74,7 +74,17 @@ function shouldUpdate(componentInstance, nextProps, nextState) {
   if (nextProps) {
     componentInstance.props = nextProps;
   }
-  componentInstance.state = nextState;
+  if (componentInstance.constructor.getDerivedStateFromProps) {
+    let nextState = componentInstance.constructor.getDerivedStateFromProps(
+      nextProps,
+      componentInstance.state
+    );
+    if (nextState) {
+      componentInstance.state = nextState;
+    }
+  } else {
+    componentInstance.state = nextState;
+  }
 
   if (willUpdate) {
     componentInstance.forceUpdate();

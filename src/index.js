@@ -2,26 +2,23 @@ import React from "./react";
 import ReactDOM from "./react-dom";
 
 class Child extends React.Component {
-  componentWillMount() {
-    console.log("[Child]", "componentWillMount");
+  constructor(props) {
+    super(props);
+    this.state = {
+      count: 0,
+    };
   }
 
   componentDidMount() {
     console.log("[Child]", "componentDidMount");
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    const shouldUpdate = !!(nextProps.count % 3 === 0);
-    console.log("[Child]", "shouldComponentUpdate", shouldUpdate);
-    return shouldUpdate;
-  }
 
-  componentWillReceiveProps(){
-    console.log('[Child]', 'componentWillReceiveProps')
-  }
-
-  componentWillUpdate() {
-    console.log("[Child]", "componentWillUpdate");
+  static getDerivedStateFromProps(nextProps, prevState) {
+    console.log("[Child]", "getDerivedStateFromProps");
+    return {
+      count: nextProps.count * 2,
+    };
   }
 
   componentDidUpdate() {
@@ -33,7 +30,7 @@ class Child extends React.Component {
   }
 
   render() {
-    return <div>{this.props.count}</div>;
+    return <div>{this.state.count}</div>;
   }
 }
 
@@ -45,22 +42,10 @@ class LifeComponent extends React.Component {
     };
     console.log("[LifeComponent]", "initialize");
   }
-  componentWillMount() {
-    console.log("[LifeComponent]", "componentWillMount");
-  }
+
 
   componentDidMount() {
     console.log("[LifeComponent]", "componentDidMount");
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    const shouldUpdate = !!(nextState.number % 2 === 0);
-    console.log("[LifeComponent]", "shouldComponentUpdate", shouldUpdate);
-    return shouldUpdate;
-  }
-
-  componentWillUpdate() {
-    console.log("[LifeComponent]", "componentWillUpdate");
   }
 
   componentDidUpdate() {
@@ -77,7 +62,7 @@ class LifeComponent extends React.Component {
       <div>
         <p>{this.state.number}</p>
         <div>
-          {this.state.number === 4 ? null : <Child count={this.state.number} />}
+          <Child count={this.state.number} />
         </div>
         <button onClick={this.addHandler}> + </button>
       </div>
