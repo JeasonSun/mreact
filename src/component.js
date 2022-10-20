@@ -27,7 +27,10 @@ class Updater {
     this.emitUpdate();
   }
 
-  emitUpdate() {
+  emitUpdate(nextProps) {
+    if (nextProps) {
+      this.nextProps = nextProps;
+    }
     if (updateQueue.isBatchingUpdate) {
       updateQueue.updaters.push(this);
     } else {
@@ -69,7 +72,7 @@ function shouldUpdate(componentInstance, nextProps, nextState) {
     componentInstance.componentWillUpdate();
   }
   if (nextProps) {
-    componentInstance.nextProps = nextProps;
+    componentInstance.props = nextProps;
   }
   componentInstance.state = nextState;
 
