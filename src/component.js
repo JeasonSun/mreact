@@ -115,10 +115,14 @@ export class Component {
     // 根据老的虚拟 DOM 查找到老的真实 DOM
     let oldDom = findDOM(oldRenderVdom);
     let newRenderVdom = this.render();
+    let extraArgs;
+    if (this.getSnapshotBeforeUpdate) {
+      extraArgs = this.getSnapshotBeforeUpdate();
+    }
     compareTwoVdom(oldDom.parentNode, oldRenderVdom, newRenderVdom);
     this.oldRenderVdom = newRenderVdom;
     if (this.componentDidUpdate) {
-      this.componentDidUpdate();
+      this.componentDidUpdate(this.props, this.state, extraArgs);
     }
   }
 }
