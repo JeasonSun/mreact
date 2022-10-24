@@ -2,132 +2,53 @@ import React from "./react";
 import ReactDOM from "./react-dom";
 
 const ThemeContext = React.createContext();
+
 const { Provider, Consumer } = ThemeContext;
-
-class Content extends React.Component {
-  static contextType = ThemeContext;
-
-  render() {
-    return (
-      <div
-        style={{
-          border: `3px solid ${this.context.color}`,
-          padding: "10px",
-        }}
-      >
-        内容
-        <div>
-          <button
-            onClick={() => {
-              this.context.changeColor("red");
-            }}
-          >
-            变红
-          </button>
-          <button
-            onClick={() => {
-              this.context.changeColor("green");
-            }}
-          >
-            变绿
-          </button>
-        </div>
-      </div>
-    );
-  }
-}
 
 class Main extends React.Component {
   static contextType = ThemeContext;
 
   render() {
-    return (
-      <div
-        style={{
-          border: `3px solid ${this.context.color}`,
-          padding: "10px",
-        }}
-      >
-        主体
-        <Content />
-      </div>
-    );
+    return <div>Main: context.name: {this.context.name} </div>;
   }
 }
 
-function Title() {
+function Footer() {
   return (
     <Consumer>
-      {(value) => (
-        <div style={{ border: `3px solid ${value.color}`, padding: "10px" }}>
-          标题
-        </div>
-      )}
+      {(context) => {
+        return <div>Footer: context.name: {context.name}</div>;
+      }}
     </Consumer>
   );
-}
-// class Title extends React.Component {
-//   static contextType = ThemeContext;
-
-//   render() {
-//     return (
-//       <div
-//         style={{
-//           border: `3px solid ${this.context.color}`,
-//           padding: "10px",
-//         }}
-//       >
-//         标题
-//       </div>
-//     );
-//   }
-// }
-
-class Header extends React.Component {
-  static contextType = ThemeContext;
-
-  render() {
-    return (
-      <div
-        style={{
-          border: `3px solid ${this.context.color}`,
-          padding: "10px",
-        }}
-      >
-        头部
-        <Title />
-      </div>
-    );
-  }
 }
 class Page extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      color: "red",
+      name: "Jeason",
     };
   }
 
-  changeColor = (color) => {
-    this.setState({
-      color,
-    });
+  clickHandler = () => {
+    this.setState({ name: "mojie" });
   };
 
   render() {
-    const value = { color: this.state.color, changeColor: this.changeColor };
+    const value = { name: this.state.name };
     return (
       <Provider value={value}>
         <div
           style={{
-            border: `3px solid ${this.state.color}`,
+            border: `3px solid red`,
             padding: "10px",
             width: "400px",
           }}
         >
           主页
-          <Header />
           <Main />
+          <Footer />
+          <button onClick={this.clickHandler}>Change Name</button>
         </div>
       </Provider>
     );

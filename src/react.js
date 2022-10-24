@@ -1,6 +1,10 @@
 import { wrapToVdom } from "./utils";
 import { Component } from "./component";
-import { REACT_FORWARD_REF_TYPE } from "./constants";
+import {
+  REACT_FORWARD_REF_TYPE,
+  REACT_CONTEXT,
+  REACT_PROVIDE,
+} from "./constants";
 
 function createElement(type, config, children) {
   let ref;
@@ -41,15 +45,31 @@ function forwardRef(render) {
   };
 }
 
+// function createContext() {
+//   function Provider({ value, children }) {
+//     Provider._value = value;
+//     return children;
+//   }
+//   function Consumer({ children }) {
+//     return children(Provider._value);
+//   }
+//   return { Provider, Consumer };
+// }
+
 function createContext() {
-  function Provider({ value, children }) {
-    Provider._value = value;
-    return children;
-  }
-  function Consumer({ children }) {
-    return children(Provider._value);
-  }
-  return { Provider, Consumer };
+  const context = {
+    $$typeof: REACT_CONTEXT,
+  };
+  context.Provider = {
+    $$typeof: REACT_PROVIDE,
+    _context: context,
+  };
+
+  context.Consumer = {
+    $$typeof: REACT_CONTEXT,
+    _context: context,
+  };
+  return context;
 }
 
 const React = {
