@@ -114,6 +114,9 @@ export class Component {
     let oldRenderVdom = this.oldRenderVdom;
     // 根据老的虚拟 DOM 查找到老的真实 DOM
     let oldDom = findDOM(oldRenderVdom);
+    if (this.constructor.contextType) {
+      this.context = this.constructor.contextType.Provider._value;
+    }
     let newRenderVdom = this.render();
     let extraArgs;
     if (this.getSnapshotBeforeUpdate) {

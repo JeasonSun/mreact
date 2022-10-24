@@ -1,59 +1,137 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-class Message extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      message: [],
-    };
-    this.containerRef = React.createRef();
-  }
+const ThemeContext = React.createContext();
+const { Provider, Consumer } = ThemeContext;
 
-  componentDidMount() {
-    this.timer = setInterval(() => {
-      this.setState((state) => {
-        return {
-          message: [state.message.length, ...state.message],
-        };
-      });
-    }, 1000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timer);
-  }
-
-  getSnapshotBeforeUpdate() {
-    return {
-      prevScrollTop: this.containerRef.current.scrollTop,
-      prevScrollHeight: this.containerRef.current.scrollHeight,
-    };
-  }
-
-  componentDidUpdate(
-    prevProps,
-    prevState,
-    { prevScrollTop, prevScrollHeight }
-  ) {
-    if (this.containerRef.current) {
-      this.containerRef.current.scrollTop =
-        prevScrollTop +
-        this.containerRef.current.scrollHeight -
-        prevScrollHeight;
-    }
-  }
+class Content extends React.Component {
+  static contextType = ThemeContext;
 
   render() {
     return (
-      <div className="message-wrap" ref={this.containerRef}>
-        {this.state.message.map((item) => (
-          <p>{item}</p>
-        ))}
+      <div
+        style={{
+          border: `3px solid ${this.context.color}`,
+          padding: "10px",
+        }}
+      >
+        内容
+        <div>
+          <button
+            onClick={() => {
+              this.context.changeColor("red");
+            }}
+          >
+            变红
+          </button>
+          <button
+            onClick={() => {
+              this.context.changeColor("green");
+            }}
+          >
+            变绿
+          </button>
+        </div>
       </div>
     );
   }
 }
 
+class Main extends React.Component {
+  static contextType = ThemeContext;
+
+  render() {
+    return (
+      <div
+        style={{
+          border: `3px solid ${this.context.color}`,
+          padding: "10px",
+        }}
+      >
+        主体
+        <Content />
+      </div>
+    );
+  }
+}
+
+function Title() {
+  return (
+    <Consumer>
+      {(value) => (
+        <div style={{ border: `3px solid ${value.color}`, padding: "10px" }}>
+          标题
+        </div>
+      )}
+    </Consumer>
+  );
+}
+// class Title extends React.Component {
+//   static contextType = ThemeContext;
+
+//   render() {
+//     return (
+//       <div
+//         style={{
+//           border: `3px solid ${this.context.color}`,
+//           padding: "10px",
+//         }}
+//       >
+//         标题
+//       </div>
+//     );
+//   }
+// }
+
+class Header extends React.Component {
+  static contextType = ThemeContext;
+
+  render() {
+    return (
+      <div
+        style={{
+          border: `3px solid ${this.context.color}`,
+          padding: "10px",
+        }}
+      >
+        头部
+        <Title />
+      </div>
+    );
+  }
+}
+class Page extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      color: "red",
+    };
+  }
+
+  changeColor = (color) => {
+    this.setState({
+      color,
+    });
+  };
+
+  render() {
+    const value = { color: this.state.color, changeColor: this.changeColor };
+    return (
+      <Provider value={value}>
+        <div
+          style={{
+            border: `3px solid ${this.state.color}`,
+            padding: "10px",
+            width: "400px",
+          }}
+        >
+          主页
+          <Header />
+          <Main />
+        </div>
+      </Provider>
+    );
+  }
+}
 const root = document.getElementById("root");
-ReactDOM.render(<Message />, root);
+ReactDOM.render(<Page />, root);

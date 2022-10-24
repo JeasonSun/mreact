@@ -74,6 +74,10 @@ function mountClassComponent(vdom) {
       classComponentInstance.state = nextState;
     }
   }
+  // 类存在静态属性contextType
+  if (type.contextType) {
+    classComponentInstance.context = type.contextType.Provider._value;
+  }
 
   const renderVdom = classComponentInstance.render();
   classComponentInstance.oldRenderVdom = vdom.oldRenderVdom = renderVdom;
@@ -84,7 +88,9 @@ function mountClassComponent(vdom) {
   let dom = createDOM(renderVdom);
 
   if (classComponentInstance.componentDidMount) {
-    dom.componentDidMount = classComponentInstance.componentDidMount.bind(classComponentInstance);
+    dom.componentDidMount = classComponentInstance.componentDidMount.bind(
+      classComponentInstance
+    );
   }
   return dom;
 }
