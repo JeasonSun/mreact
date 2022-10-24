@@ -1,13 +1,19 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-class Result extends React.PureComponent {
-  render() {
-    console.log("render Result");
-    return <p>{this.props.count}</p>;
-  }
+// class Result extends React.PureComponent {
+//   render() {
+//     console.log("render Result");
+//     return <p>{this.props.count}</p>;
+//   }
+// }
+
+function Result(props) {
+  console.log('render Child')
+  return <p>{props.count}</p>;
 }
-class Counter extends React.PureComponent {
+const MemoResult = React.memo(Result);
+class Counter extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -29,8 +35,8 @@ class Counter extends React.PureComponent {
         <p>
           增加： <input ref={this.inputRef} />
         </p>
-        <button onclick={this.onClickHandler}>+</button>
-        <Result count={this.state.number} />
+        <button onClick={this.onClickHandler}>+</button>
+        <MemoResult count={this.state.number} />
       </div>
     );
   }

@@ -1,9 +1,10 @@
-import { wrapToVdom } from "./utils";
+import { shallowEqual, wrapToVdom } from "./utils";
 import { Component, PureComponent } from "./component";
 import {
   REACT_FORWARD_REF_TYPE,
   REACT_CONTEXT,
   REACT_PROVIDE,
+  REACT_MEMO,
 } from "./constants";
 
 function createElement(type, config, children) {
@@ -72,6 +73,14 @@ function createContext() {
   return context;
 }
 
+function memo(type, compare = shallowEqual) {
+  return {
+    $$typeof: REACT_MEMO,
+    type,
+    compare,
+  };
+}
+
 const React = {
   createElement,
   Component,
@@ -79,6 +88,7 @@ const React = {
   createRef,
   forwardRef,
   createContext,
+  memo,
 };
 
 export default React;

@@ -2,6 +2,7 @@ import { type } from "@testing-library/user-event/dist/type";
 import {
   REACT_CONTEXT,
   REACT_FORWARD_REF_TYPE,
+  REACT_MEMO,
   REACT_PROVIDE,
   REACT_TEXT,
 } from "./constants";
@@ -25,7 +26,9 @@ function createDOM(vdom) {
     return document.createTextNode(vdom);
   }
   let { type, props, ref } = vdom;
-  if (type && type.$$typeof === REACT_CONTEXT) {
+  if (type && type.$$typeof === REACT_MEMO) {
+    return mountMemoComponent(vdom);
+  } else if (type && type.$$typeof === REACT_CONTEXT) {
     return mountContextComponent(vdom);
   } else if (type && type.$$typeof === REACT_PROVIDE) {
     return mountProviderComponent(vdom);
@@ -59,6 +62,13 @@ function createDOM(vdom) {
     ref.current = dom;
   }
   return dom;
+}
+function mountMemoComponent(vdom) {
+  const { type, props } = vdom;
+  let renderVdom = type.type(props);
+  vdom.prevProps = props;
+  vdom.oldRenderVdom = renderVdom;
+  return createDOM(renderVdom);
 }
 
 function mountForwardComponent(vdom) {
@@ -222,7 +232,9 @@ export function compareTwoVdom(parentDom, oldVdom, newVdom, nextDOM) {
 }
 
 function updateElement(oldVdom, newVdom) {
-  if (oldVdom.type && oldVdom.type.$$typeof === REACT_PROVIDE) {
+  if (oldVdom.type && oldVdom.type.$$typeof === REACT_MEMO) {
+    updateMemoComponent(oldVdom, newVdom);
+  } else if (oldVdom.type && oldVdom.type.$$typeof === REACT_PROVIDE) {
     updateProviderComponent(oldVdom, newVdom);
   } else if (oldVdom.type && oldVdom.type.$$typeof === REACT_CONTEXT) {
     updateConsumerComponent(oldVdom, newVdom);
@@ -241,6 +253,21 @@ function updateElement(oldVdom, newVdom) {
     } else {
       updateFunctionComponent(oldVdom, newVdom);
     }
+  }
+}
+
+function updateMemoComponent(oldVdom, newVdom) {
+  let { type, prevProps } = oldVdom;
+  if (type.compare(prevProps, newVdom.props)) {
+    // 如果相等，不更新
+    newVdom.oldRenderVdom = oldVdom.oldRenderVdom;
+    newVdom.prevProps = oldVdom.prevProps;
+  } else {
+    let parentDOM = findDOM(oldVdom).parentNode;
+    let oldRenderVdom = newVdom.type.type(newVdom.props);
+    compareTwoVdom(parentDOM, oldVdom.oldRenderVdom, oldRenderVdom);
+    newVdom.oldRenderVdom = oldRenderVdom;
+    newVdom.prevProps = newVdom.props;
   }
 }
 
