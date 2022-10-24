@@ -1,58 +1,40 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-const ThemeContext = React.createContext();
-
-const { Provider, Consumer } = ThemeContext;
-
-class Main extends React.Component {
-  static contextType = ThemeContext;
-
+class Result extends React.PureComponent {
   render() {
-    return <div>Main: context.name: {this.context.name} </div>;
+    console.log("render Result");
+    return <p>{this.props.count}</p>;
   }
 }
-
-function Footer() {
-  return (
-    <Consumer>
-      {(context) => {
-        return <div>Footer: context.name: {context.name}</div>;
-      }}
-    </Consumer>
-  );
-}
-class Page extends React.Component {
+class Counter extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      name: "Jeason",
+      number: 0,
     };
+    this.inputRef = React.createRef();
   }
-
-  clickHandler = () => {
-    this.setState({ name: "mojie" });
+  onClickHandler = () => {
+    this.setState({
+      number: this.state.number + Number(this.inputRef.current.value),
+    });
   };
 
   render() {
-    const value = { name: this.state.name };
+    console.log("render Counter");
     return (
-      <Provider value={value}>
-        <div
-          style={{
-            border: `3px solid red`,
-            padding: "10px",
-            width: "400px",
-          }}
-        >
-          主页
-          <Main />
-          <Footer />
-          <button onClick={this.clickHandler}>Change Name</button>
-        </div>
-      </Provider>
+      <div>
+        count: {this.state.number}
+        <p>
+          增加： <input ref={this.inputRef} />
+        </p>
+        <button onclick={this.onClickHandler}>+</button>
+        <Result count={this.state.number} />
+      </div>
     );
   }
 }
+
 const root = document.getElementById("root");
-ReactDOM.render(<Page />, root);
+ReactDOM.render(<Counter />, root);

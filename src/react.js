@@ -1,5 +1,5 @@
 import { wrapToVdom } from "./utils";
-import { Component } from "./component";
+import { Component, PureComponent } from "./component";
 import {
   REACT_FORWARD_REF_TYPE,
   REACT_CONTEXT,
@@ -75,6 +75,7 @@ function createContext() {
 const React = {
   createElement,
   Component,
+  PureComponent,
   createRef,
   forwardRef,
   createContext,
