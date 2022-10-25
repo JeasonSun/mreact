@@ -8,8 +8,27 @@ import {
 } from "./constants";
 import { addEvent } from "./event";
 
+let hookState = [];
+let hookIndex = 0;
+let scheduleUpdate;
+
 function render(vdom, container) {
   mount(vdom, container);
+  scheduleUpdate = () => {
+    console.log("开始更新");
+    hookIndex = 0;
+    compareTwoVdom(container, vdom, vdom);
+  };
+}
+
+export function useState(initialState) {
+  hookState[hookIndex] = hookState[hookIndex] || initialState;
+  const currentIndex = hookIndex;
+  const setState = (newState) => {
+    hookState[currentIndex] = newState;
+    scheduleUpdate();
+  };
+  return [hookState[hookIndex++], setState];
 }
 
 function mount(vdom, container) {

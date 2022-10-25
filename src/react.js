@@ -1,5 +1,6 @@
 import { shallowEqual, wrapToVdom } from "./utils";
 import { Component, PureComponent } from "./component";
+import { useState } from "./react-dom";
 import {
   REACT_FORWARD_REF_TYPE,
   REACT_CONTEXT,
@@ -89,6 +90,7 @@ const React = {
   forwardRef,
   createContext,
   memo,
+  useState,
 };
 
 export default React;
