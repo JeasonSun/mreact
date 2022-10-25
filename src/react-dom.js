@@ -82,6 +82,32 @@ export function useCallback(callback, deps) {
   }
 }
 
+export function useContext(context) {
+  return context._currentValue;
+}
+
+export function useEffect(callback, deps) {
+  if (hookState[hookIndex]) {
+    const [lastDestroy, lastDeps] = hookState[hookIndex];
+    const same = deps.every((dep, index) => dep === lastDeps[index]);
+    if (same) {
+      // 如果依赖没有变更， 不再执行
+      hookIndex++;
+    } else {
+      lastDestroy && lastDestroy();
+      setTimeout(() => {
+        const destroy = callback();
+        hookState[hookIndex++] = [destroy, deps];
+      });
+    }
+  } else {
+    setTimeout(() => {
+      const destroy = callback(); // callback的返回值，就是destroy 函数
+      hookState[hookIndex++] = [destroy, deps];
+    });
+  }
+}
+
 function mount(vdom, container) {
   let newDOM = createDOM(vdom);
   container.appendChild(newDOM);
