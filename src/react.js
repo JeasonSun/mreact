@@ -1,6 +1,7 @@
 import { shallowEqual, wrapToVdom } from "./utils";
 import { Component, PureComponent } from "./component";
-import { useState } from "./react-dom";
+import { useState, useCallback, useMemo } from "./react-dom";
+
 import {
   REACT_FORWARD_REF_TYPE,
   REACT_CONTEXT,
@@ -82,6 +83,8 @@ function memo(type, compare = shallowEqual) {
   };
 }
 
+
+
 const React = {
   createElement,
   Component,
@@ -91,6 +94,8 @@ const React = {
   createContext,
   memo,
   useState,
+  useCallback,
+  useMemo,
 };
 
 export default React;

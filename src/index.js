@@ -1,17 +1,36 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-function Counter() {
-
-  const [number, setState] = React.useState(0);
-  
-  const handleClick = () => {
-    setState(number + 1);
-  };
+function Child({ data, clickHandler }) {
+  console.log("render Child");
   return (
     <div>
-      <p>{number}</p>
-      <button onClick={handleClick}>+</button>
+      <hr />
+      <p>{data.number}</p>
+      <button onClick={clickHandler}>+</button>
+    </div>
+  );
+}
+
+const MemoChild = React.memo(Child);
+
+function Counter() {
+  const [number, setNumber] = React.useState(0);
+  const [name, setName] = React.useState("mojie");
+  const data = React.useMemo(
+    () => ({
+      number,
+    }),
+    [number]
+  );
+  const setNumberHandler = React.useCallback(() => {
+    setNumber(number + 1);
+  }, [number]);
+
+  return (
+    <div>
+      <input value={name} onChange={(e) => setName(e.target.value)} />
+      <MemoChild data={data} clickHandler={setNumberHandler} />
     </div>
   );
 }

@@ -1,4 +1,3 @@
-import { type } from "@testing-library/user-event/dist/type";
 import {
   REACT_CONTEXT,
   REACT_FORWARD_REF_TYPE,
@@ -15,7 +14,6 @@ let scheduleUpdate;
 function render(vdom, container) {
   mount(vdom, container);
   scheduleUpdate = () => {
-    console.log("开始更新");
     hookIndex = 0;
     compareTwoVdom(container, vdom, vdom);
   };
@@ -29,6 +27,43 @@ export function useState(initialState) {
     scheduleUpdate();
   };
   return [hookState[hookIndex++], setState];
+}
+
+export function useMemo(factory, deps) {
+  if (hookState[hookIndex]) {
+    // 已经存在记录
+    const [lastMemo, lastDeps] = hookState[hookIndex];
+    const same = deps.every((dep, index) => dep === lastDeps[index]);
+    if (same) {
+      hookIndex++;
+      return lastMemo;
+    } else {
+      const newMemo = factory();
+      hookState[hookIndex++] = [newMemo, deps];
+      return newMemo;
+    }
+  } else {
+    const newMemo = factory();
+    hookState[hookIndex++] = [newMemo, deps];
+    return newMemo;
+  }
+}
+
+export function useCallback(callback, deps) {
+  if (hookState[hookIndex]) {
+    const [lastCallback, lastDeps] = hookState[hookIndex];
+    const same = deps.every((dep, index) => dep === lastDeps[index]);
+    if (same) {
+      hookIndex++;
+      return lastCallback;
+    } else {
+      hookState[hookIndex++] = [callback, deps];
+      return callback;
+    }
+  } else {
+    hookState[hookIndex++] = [callback, deps];
+    return callback;
+  }
 }
 
 function mount(vdom, container) {
