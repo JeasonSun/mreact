@@ -1,6 +1,6 @@
 import { shallowEqual, wrapToVdom } from "./utils";
 import { Component, PureComponent } from "./component";
-import { useState, useCallback, useMemo } from "./react-dom";
+import { useState, useCallback, useMemo , useReducer} from "./react-dom";
 
 import {
   REACT_FORWARD_REF_TYPE,
@@ -96,6 +96,7 @@ const React = {
   useState,
   useCallback,
   useMemo,
+  useReducer
 };
 
 export default React;

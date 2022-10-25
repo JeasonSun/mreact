@@ -19,15 +19,31 @@ function render(vdom, container) {
   };
 }
 
-export function useState(initialState) {
+export function useReducer(reducer, initialState) {
   hookState[hookIndex] = hookState[hookIndex] || initialState;
   const currentIndex = hookIndex;
-  const setState = (newState) => {
-    hookState[currentIndex] = newState;
+  const dispatch = (action) => {
+    hookState[currentIndex] = reducer
+      ? reducer(hookState[currentIndex], action)
+      : action;
     scheduleUpdate();
   };
-  return [hookState[hookIndex++], setState];
+  return [hookState[hookIndex++], dispatch];
 }
+
+export function useState(initialState) {
+  return useReducer(null, initialState);
+}
+
+// export function useState(initialState) {
+//   hookState[hookIndex] = hookState[hookIndex] || initialState;
+//   const currentIndex = hookIndex;
+//   const setState = (newState) => {
+//     hookState[currentIndex] = newState;
+//     scheduleUpdate();
+//   };
+//   return [hookState[hookIndex++], setState];
+// }
 
 export function useMemo(factory, deps) {
   if (hookState[hookIndex]) {
