@@ -108,6 +108,37 @@ export function useEffect(callback, deps) {
   }
 }
 
+export function useLayoutEffect(callback, deps) {
+  if (hookState[hookIndex]) {
+    const [lastDestroy, lastDeps] = hookState[hookIndex];
+    const same = deps.every((dep, index) => dep === lastDeps[index]);
+    if (same) {
+      // 如果依赖没有变更， 不再执行
+      hookIndex++;
+    } else {
+      lastDestroy && lastDestroy();
+      queueMicrotask(() => {
+        const destroy = callback();
+        hookState[hookIndex++] = [destroy, deps];
+      });
+    }
+  } else {
+    queueMicrotask(() => {
+      const destroy = callback(); // callback的返回值，就是destroy 函数
+      hookState[hookIndex++] = [destroy, deps];
+    });
+  }
+}
+
+export function useRef() {
+  if (hookState[hookIndex]) {
+    return hookState[hookIndex++];
+  } else {
+    hookState[hookIndex] = { current: null };
+    return hookState[hookIndex++];
+  }
+}
+
 function mount(vdom, container) {
   let newDOM = createDOM(vdom);
   container.appendChild(newDOM);

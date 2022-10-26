@@ -7,6 +7,8 @@ import {
   useReducer,
   useContext,
   useEffect,
+  useLayoutEffect,
+  useRef
 } from "./react-dom";
 
 import {
@@ -104,6 +106,9 @@ const React = {
   useReducer,
   useContext,
   useEffect,
+  useLayoutEffect,
+  useRef,
+
 };
 
 export default React;
