@@ -8,7 +8,7 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
-  useRef
+  useRef,
 } from "./react-dom";
 
 import {
@@ -92,6 +92,10 @@ function memo(type, compare = shallowEqual) {
   };
 }
 
+function useImperativeHandle(ref, factory) {
+  ref.current = factory();
+}
+
 const React = {
   createElement,
   Component,
@@ -108,7 +112,7 @@ const React = {
   useEffect,
   useLayoutEffect,
   useRef,
-
+  useImperativeHandle
 };
 
 export default React;
